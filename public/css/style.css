@@ -1,0 +1,10 @@
+h1.title {
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.btn.btn-xs {
+    font-size: 0.8rem;
+    padding: 2px 8px;
+    font-weight: 600;
+}
