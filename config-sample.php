@@ -5,9 +5,9 @@ return [
 
     // database configuration
     'database' => [
-        'name' => 'apartments',
-        'username' => 'daniele',
-        'password' => 'daniele83',
+        'name' => 'your-database',
+        'username' => 'root',
+        'password' => '',
         'connection' => 'mysql:host=127.0.0.1',
         'options' => [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
@@ -22,7 +22,7 @@ return [
         'session_name' => 'apts_session',
     ],
 
-    // 'base_url' => 'apts',
+    // 'base_url' => 'your-website-subfolder/', // EG: http://www.example.com/your-website-subfolder
 
     // uncomment this if you want to use log using the function addLog()
     // 'log_file_path' => 'logs.txt',
