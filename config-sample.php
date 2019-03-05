@@ -18,8 +18,8 @@ return [
     'silly_auth' => [
         'user' => 'admin',
         'pass' => 'pass',
-        'cookie_name' => 'apts_cookie',
-        'session_name' => 'apts_session',
+        'cookie_name' => 'silly_auth_cookie',
+        'session_name' => 'silly_auth_session',
     ],
 
     // 'base_url' => 'your-website-subfolder/', // EG: http://www.example.com/your-website-subfolder
