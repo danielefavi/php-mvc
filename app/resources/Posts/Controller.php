@@ -9,6 +9,11 @@ use \Core\App;
 
 class Controller
 {
+    /**
+     * The constructor protects the controller from not logged user.
+     *
+     * @return void
+     */
     public function __construct()
     {
         if (! auth()->isLogged()) {
@@ -18,8 +23,14 @@ class Controller
 
 
 
+    /**
+     * Shows the post main page.
+     *
+     * @return void
+     */
     public function index()
     {
+        // getting all the posts already paginated
         $res = Post::paginate();
 
         return view('posts/index', [
@@ -30,6 +41,11 @@ class Controller
 
 
 
+    /**
+     * Shows the post creation form.
+     *
+     * @return void
+     */
     public function create()
     {
         return view('posts/create');
@@ -37,6 +53,11 @@ class Controller
 
 
 
+    /**
+     * Store a new post when the user submit the button.
+     *
+     * @return void
+     */
     public function store()
     {
         $errors = $this->validateForm();
@@ -52,17 +73,28 @@ class Controller
 
 
 
+    /**
+     * Show the edit form.
+     *
+     * @return void
+     */
     public function edit()
     {
         if ($post = Post::find(request('get', 'id'))) {
             return view('posts/edit', compact('post'));
         }
 
+        // return the 404 page if the post is not found
         return view('404');
     }
 
 
 
+    /**
+     * Depending on the button the user presses it performs a differen action.
+     *
+     * @return void
+     */
     public function postActions()
     {
         if (!$post = Post::find(request('get', 'id'))) {
@@ -78,6 +110,12 @@ class Controller
 
 
 
+    /**
+     * First perfomrs the form validation on the post then update it.
+     *
+     * @param Post $post
+     * @return void
+     */
     private function update($post)
     {
         $errors = $this->validateForm();
@@ -91,6 +129,12 @@ class Controller
 
 
 
+    /**
+     * Delete the given post and redirect to the post main page.
+     *
+     * @param Post $post
+     * @return void
+     */
     public function delete($post)
     {
         $post->delete();
@@ -100,6 +144,11 @@ class Controller
 
 
 
+    /**
+     * Perform the form validation checking the data from the request.
+     *
+     * @return array
+     */
     private function validateForm()
     {
         $errors = [];

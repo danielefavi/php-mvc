@@ -143,11 +143,11 @@ class Router
      * @param boolean $return404|false
      * @return mixed
      */
-    public function direct($controller404=null)
+    public function direct()
     {
         $requestType = $_SERVER['REQUEST_METHOD'];
 
-        $uri = $this->requestUri();
+        $uri = rtrim($this->requestUri(), '/');
 
         if (array_key_exists($uri, $this->routes[$requestType])) {
             return $this->callAction(

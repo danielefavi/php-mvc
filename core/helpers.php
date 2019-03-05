@@ -333,7 +333,7 @@ function redirect($path, $params=[])
     }
 
     if (count($params)) {
-        $this->append_params_to_uri($path, $params);
+        $path = append_params_to_uri($path, $params);
     }
 
     header("Location: " . $path);
@@ -365,23 +365,24 @@ function redirectBack()
 /**
  * Check if the given path matchs with the user's URL.
  *
- * @param string $path
- * @param string $returnValue|null
+ * @param mixed $paths          Path or list of paths to check
+ * @param string $retVal|true   The default value that returns if the given path match
  * @return mixed
  */
-function link_is_active($paths, $returnValue=null)
+function link_is_active($paths, $retVal=true)
 {
     if (is_string($paths)) $paths = [ $paths ];
 
-    $current = trim($_SERVER['REQUEST_URI'], '/') . '/';
-
     foreach ($paths as $path) {
-        $path = trim(get_rel_path($path), '/') . '/';
+        if (substr($path, -1) == '*') {
+            $path = get_uri( rtrim($path, '*') );
 
-        if ($current == $path) {
-            if ($returnValue) return $returnValue;
+            if (strpos(get_current_uri(), $path) === 0) return $retVal;
+        }
+        else {
+            $path = trim(get_uri($path), '/');
 
-            return true;
+            if (trim(get_current_uri(), '/') == $path) return $retVal;
         }
     }
 

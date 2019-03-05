@@ -8,3 +8,11 @@ h1.title {
     padding: 2px 8px;
     font-weight: 600;
 }
+
+ul.tasks {
+    list-style: none;
+}
+
+ul.tasks .is-completed {
+    text-decoration: line-through;
+}

@@ -8,6 +8,13 @@ use \Core\App;
 
 class HomeController
 {
+
+    /**
+     * Show the welcome page if the user is not loggen in otherwise it will
+     * redirect the user to the administration homepage.
+     *
+     * @return void
+     */
     public function welcome()
     {
         if (! auth()->isLogged()) {
@@ -19,13 +26,22 @@ class HomeController
 
 
 
-    public function home()
+    /**
+     * A controller test function where you can do your tests :)
+     *
+     * @return void
+     */
+    public function test()
     {
-        dd('aaa');
     }
 
 
 
+    /**
+     * Perfom the logout and redirect the user back to the login page.
+     *
+     * @return void
+     */
     public function logout()
     {
         auth()->logout();
@@ -35,6 +51,13 @@ class HomeController
 
 
 
+    /**
+     * Perform the login: if the user is already logged in then he will be
+     * redirected to the administration homepage otherwise it will show the
+     * login view.
+     *
+     * @return void
+     */
     public function login()
     {
         if (auth()->isLogged()) {
@@ -46,6 +69,11 @@ class HomeController
 
 
 
+    /**
+     * Performs the actual login when the user send the post request.
+     *
+     * @return void
+     */
     public function performLogin()
     {
         $user = request('post', 'user');
@@ -60,6 +88,12 @@ class HomeController
 
 
 
+    /**
+     * It shows the 404 page.
+     *
+     * @param Class $parameter
+     * @return void
+     */
     public function page404()
     {
         return view('404');

@@ -5,8 +5,8 @@
 <div class="card">
     <div class="card-body">
         <p>
-            Hi There!
-            <br>
+            Hi There! You are logged in!
+            <br><br>
             This is the admin homepage!
         </p>
     </div>
