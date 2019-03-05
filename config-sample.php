@@ -3,12 +3,7 @@
 return [
     'debug' => true,
 
-    'base_url' => 'apts',
-
-    'log_file_path' => 'logs.txt',
-    
-    'storage_path' => 'public/uploads',
-
+    // database configuration
     'database' => [
         'name' => 'apartments',
         'username' => 'daniele',
@@ -19,10 +14,19 @@ return [
         ]
     ],
 
+    // auth configuration
     'silly_auth' => [
-        'user' => 'daniele',
-        'pass' => 'daniele83',
+        'user' => 'admin',
+        'pass' => 'pass',
         'cookie_name' => 'apts_cookie',
         'session_name' => 'apts_session',
     ],
+
+    // 'base_url' => 'apts',
+
+    // uncomment this if you want to use log using the function addLog()
+    // 'log_file_path' => 'logs.txt',
+
+    // path of the folder where you are going to store the uploaded files
+    // 'storage_path' => 'public/uploads',
 ];
