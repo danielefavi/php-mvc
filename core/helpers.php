@@ -12,7 +12,7 @@ use Core\App;
  */
 function get_absolute_path($path=null)
 {
-    $absPath = rtrim(__DIR__ , '/core');
+    $absPath = preg_replace('/\/core$/', '', __DIR__);
 
     if ($path) {
         $absPath = rtrim($absPath, '/');

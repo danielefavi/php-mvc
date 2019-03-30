@@ -98,7 +98,7 @@ class Router
      */
     public function resource($baseUrl, $resourceName)
     {
-        $path = get_absolute_path("/app/resources/$resourceName/routes.php");
+        $path = get_absolute_path("/app/resources/{$resourceName}/routes.php");
 
         if (empty($resourceName)) {
             throw new \Exception("The resourceName is not valid for the resource $baseUrl", 1);
