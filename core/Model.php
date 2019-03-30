@@ -247,6 +247,26 @@ class Model
 
 
     /**
+     * From the DB result set this function instatiates the model class foreach
+     * element in the result.
+     *
+     * @param array $dbResult|[]
+     * @return static
+     */
+    public static function loadModelData($dbResult=[])
+    {
+        $collection = [];
+
+        foreach ($dbResult as $element) {
+            $collection[] = static::loadModelWithData($element);
+        }
+
+        return $collection;
+    }
+
+
+
+    /**
      * For the given data from the database it loads the model with those data.
      *
      * @param array $data
@@ -362,16 +382,10 @@ class Model
 
         $result = DB()->select($table, $clauses, $clauseData);
 
-        $collection = [];
-
         // by default each result of the query will be converted into the
         // istance of the Model
         if ($settings['loadModel']) {
-            foreach ($result as $element) {
-                $collection[] = static::loadModelWithData($element);
-            }
-
-            return $collection;
+            return static::loadModelData($result);
         }
 
         return $result;
@@ -778,165 +792,16 @@ class Model
      */
     public static function paginate($clauses=[], $clauseData=[], $settings=[])
     {
-        $params = static::setPaginationDefaultParameters();
-
-        extract(static::setGenericSearchQuery($clauses, $clauseData, $params['search'], $settings));
-
-        $clauses['limit'] = $params['limit'];
-
-        if (isset($params['order_by']) and $params['order_by']) {
-            $clauses['orderBy'] = $params['order_by'] . " " . $params['order_by_mode'];
+        if (isset($settings['searchable'])) {
+            $settings['searchable'] = $settings['searchable'];
         }
+        else $settings['searchable'] = static::getFillableStatic();
 
-        $offset = $params['limit'] * ($params['page'] - 1);
-        if ($offset > 0) {
-            $clauses['offset'] = $offset;
-        }
+        $result = DB()->paginate(static::getTableStatic(), $clauses, $clauseData, $settings);
 
-        $result = static::select($clauses, $clauseData, $settings);
+        $result['result'] = static::loadModelData($result['result']);
 
-        return [
-            'result' => $result,
-            'pagination' => static::getPagination($params, $clauses, $clauseData, $settings),
-        ];
+        return $result;
     }
 
-
-
-    /**
-     * Set in the clauses the generic search query.
-     * It search the given string $strToSearch in the filed list $settings['searchable']
-     * (if is set) otherwise it will search in all $fillable fields.
-     *
-     * @param array $clauses
-     * @param array $clauseData
-     * @param string $strToSearch
-     * @param array $settings
-     * @return array
-     */
-    private static function setGenericSearchQuery($clauses, $clauseData, $strToSearch, $settings=[])
-    {
-        if (! empty($strToSearch)) {
-            if (isset($settings['searchable'])) {
-                $fields = $settings['searchable'];
-            }
-            else $fields = static::getFillableStatic();
-
-            if (is_array($fields) and count($fields)) {
-                $searchClause = '';
-
-                foreach ($fields as $field) {
-                    $searchClause .= " $field LIKE '%$strToSearch%' OR ";
-                }
-
-                $searchClause = rtrim($searchClause, 'OR ');
-
-                if (! empty($clauses['where'])) {
-                    $clauses['where'] = '(' . $clauses['where'] . ") AND ( $searchClause )";
-                }
-                else {
-                    $clauses['where'] = "( $searchClause )";
-                }
-            }
-        }
-
-        return [
-            'clauses' => $clauses,
-            'clauseData' => $clauseData,
-        ];
-    }
-
-
-
-    /**
-     * Set the default pagination parameters if they are not found in the
-     * request parameters.
-     *
-     * @return array
-     */
-    private static function setPaginationDefaultParameters()
-    {
-        $limit = request('get', 'limit', 10);
-        $page = request('get', 'page', 0);
-        $orderBy = request('get', 'order_by');
-        $orderByMode = request('get', 'order_by_mode');
-        $search = request('get', 'search');
-
-        if (!is_numeric($page) or ($page < 1) or empty($page)) $page = 1;
-        if (!is_numeric($limit) or ($limit < 10) or ($limit > 500)) $limit = 50;
-        if (empty($orderBy)) $orderBy = null;
-        if (empty($orderByMode)) $orderByMode = null;
-        if (empty($search)) $search = null;
-
-        return [
-            'limit' => $limit,
-            'page' => $page,
-            'order_by' => $orderBy,
-            'order_by_mode' => $orderByMode,
-            'search' => $search,
-        ];
-    }
-
-
-
-    /**
-     * Return the pagination information like as the current page, the links
-     * of all the pages, the total pages and the total elements in the result.
-     *
-     * @param array $params
-     * @param array $clauses
-     * @param array $clauseData
-     * @param array $selectSett
-     * @return array
-     */
-    private static function getPagination($params, $clauses, $clauseData, $selectSett)
-    {
-        $page = $params['page'];
-
-        unset($clauses['limit']);
-        unset($clauses['offset']);
-        unset($clauses['orderBy']);
-
-        $totalElem = static::count($clauses, $clauseData, $selectSett);
-        $totalPages = ceil($totalElem / $params['limit']);
-
-        if ($page > $totalPages) $page = $totalPages;
-
-        return [
-            'totalElements' => $totalElem,
-            'totalPages' => $totalPages,
-            'current' => $page,
-            'next' => ($page+1) <= $totalPages ? ($page+1) : null,
-            'prev' => ($page-1) > 0 ? ($page-1) : null,
-            'links' => static::getPaginationLinks($params, $totalPages),
-        ];
-    }
-
-
-
-    /**
-     * It builds the list of the links for each page in the result.
-     *
-     * @param array $params
-     * @param array $totalPages
-     * @return array
-     */
-    private static function getPaginationLinks($params, $totalPages)
-    {
-        $links = [];
-
-        $getParams = request('get');
-        foreach ($params as $key => $value) {
-            if (empty($value)) continue;
-
-            $getParams[$key] = $value;
-        }
-
-        for($i=1; $i<=$totalPages; $i++) {
-            $getParams['page'] = $i;
-            $links[$i] = get_current_uri($getParams);
-        }
-
-        return $links;
-    }
 }

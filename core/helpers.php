@@ -4,7 +4,6 @@ use Core\App;
 
 
 
-
 /**
  * Return the full path. EG: /var/www/html/the-app-folder/base-url/$path
  *
@@ -188,9 +187,15 @@ function  append_params_to_uri($uri, $params=[])
         $uri = explode('?', $uri)[0] . '?';
 
         foreach ($params as $key => $value) {
-            $value = urlencode($value);
+            if (is_array($value)) {
+                foreach ($value as $arrVal) {
+                    $uri .= $key . "[]=$arrVal&";
+                }
+            } else {
+                $value = urlencode($value);
 
-            $uri .= "$key=$value&";
+                $uri .= "$key=$value&";
+            }
         }
 
         $uri = rtrim($uri, '&');
