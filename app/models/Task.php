@@ -64,4 +64,23 @@ class Task extends Model
 
         return $this->save();
     }
+
+
+
+    /**
+     * Return the path of the task resource.
+     *
+     * @param string $suffix|null
+     * @return string
+     */
+    public function path($suffix=null)
+    {
+        $path = 'admin/tasks/' . $this->getId();
+
+        if ($suffix) {
+            $path .= "/{$suffix}";
+        }
+
+        return get_uri($path);
+    }
 }

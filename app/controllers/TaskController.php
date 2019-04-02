@@ -53,9 +53,7 @@ class TaskController
             return $this->index(['The task title is mandatory!']);
         }
 
-        Task::create([
-            'task' => $task
-        ]);
+        Task::create(compact('task'));
 
         return redirect('admin/tasks');
     }
@@ -67,16 +65,17 @@ class TaskController
      *
      * @return void
      */
-    public function update()
+    public function update($attr=[])
     {
-        $tasksCompleted = request('post', 'tasks', []);
-
-        foreach(Task::select() as $task) {
-            if (isset($tasksCompleted[$task->getId()]) and !$task->isCompleted()) {
-                $task->setAsCompleted();
-            }
-            else if (!isset($tasksCompleted[$task->getId()]) and $task->isCompleted()) {
-                $task->setAsNotCompleted();
+        if (isset($attr['taskId'])) {
+            if ($task = Task::find($attr['taskId'])) {
+                if (request('post', 'is_completed')) {
+                    $task->setAsCompleted();
+                } else {
+                    $task->setAsNotCompleted();
+                }
+            } else {
+                return view('404');
             }
         }
 

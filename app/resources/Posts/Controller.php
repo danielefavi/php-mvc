@@ -78,34 +78,16 @@ class Controller
      *
      * @return void
      */
-    public function edit()
+    public function edit($attr=[])
     {
-        if ($post = Post::find(request('get', 'id'))) {
-            return view('posts/edit', compact('post'));
+        if (isset($attr['postId'])) {
+            if ($post = Post::find($attr['postId'])) {
+                return view('posts/edit', compact('post'));
+            }
         }
 
         // return the 404 page if the post is not found
         return view('404');
-    }
-
-
-
-    /**
-     * Depending on the button the user presses it performs a differen action.
-     *
-     * @return void
-     */
-    public function postActions()
-    {
-        if (!$post = Post::find(request('get', 'id'))) {
-            return view('404');
-        }
-
-        if (request('post', 'action') == 'delete') {
-            return $this->delete($post);
-        }
-
-        return $this->update($post);
     }
 
 
@@ -116,8 +98,11 @@ class Controller
      * @param Post $post
      * @return void
      */
-    private function update($post)
+    public function update($attr=[])
     {
+        if (! isset($attr['postId'])) return view('404');
+        else if (!$post = Post::find($attr['postId'])) return view('404');
+
         $errors = $this->validateForm();
 
         if (! count($errors)) {
@@ -135,8 +120,11 @@ class Controller
      * @param Post $post
      * @return void
      */
-    public function delete($post)
+    public function delete($attr=[])
     {
+        if (! isset($attr['postId'])) return view('404');
+        else if (!$post = Post::find($attr['postId'])) return view('404');
+
         $post->delete();
 
         return redirect('admin/posts/index');

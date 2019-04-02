@@ -149,16 +149,16 @@ class Router
 
         $uri = rtrim($this->requestUri(), '/');
 
-        if (array_key_exists($uri, $this->routes[$requestType])) {
-            return $this->callAction(
-                ...explode('@', $this->routes[$requestType][$uri])
-            );
+        foreach ($this->routes[$requestType] as $routesUrl => $action) {
+            if ($attrValues = $this->routeExists($routesUrl, $uri)) {
+                $namedAttrValues = $this->getRequestAttributes($routesUrl, $uri);
+
+                return $this->callAction($action, $namedAttrValues);
+            }
         }
 
         // in case of route not found
-        if ($this->page404) return $this->callAction(
-            ...explode('@', $this->page404)
-        );
+        if ($this->page404) return $this->callAction($this->page404);
 
         throw new \Exception('No route defined for this URI.');
     }
@@ -186,10 +186,15 @@ class Router
      *
      * @param string $controller
      * @param string $action
+     * @param array $attributes|[]
      * @param mixed
      */
-    private function callAction($controller, $action)
+    private function callAction($controllerAction, $attributes=[])
     {
+        $controllerAction = explode('@', $controllerAction);
+        $controller = $controllerAction[0];
+        $action = $controllerAction[1];
+
         $controllerObj = new $controller;
 
         if (! method_exists($controllerObj, $action)) {
@@ -198,7 +203,7 @@ class Router
             );
         }
 
-        return $controllerObj->$action();
+        return $controllerObj->$action($attributes);
     }
 
 
@@ -221,5 +226,92 @@ class Router
         }
 
         else $this->routes[$method][$url] = "App\\Controllers\\{$controller}";
+    }
+
+
+
+    /**
+     * Build the array key => val from the requested URL and pattern.
+     *  EG: for a route like this:
+     *      admin/projects/{projectId}/edit/{anotherId}
+     * and the request URL like this:
+     *      admin/projects/99/edit/1221
+     * it will return the array
+     * [
+     *      [projectId] => 1
+     *      [anotherId] => 1221
+     * ]
+     *
+     * @param string $route
+     * @param string $values
+     * @return array
+     */
+    private function getRequestAttributes($route, $requestUrl)
+    {
+        preg_match_all('/\{(.*?)\}/', $route, $names);
+
+        if (preg_match($this->getRouteRegex($route), $requestUrl, $values)) {
+            if ($values[0] == $requestUrl) {
+                array_shift($values); // removing the first element
+            }
+        }
+
+        if (isset($names[1]) and (count($names[1]) == count($values))) {
+            $attributes = [];
+
+            foreach ($names[1] as $key => $name) {
+                $attributes[$name] = $values[$key];
+            }
+
+            return $attributes;
+        }
+
+        return [];
+    }
+
+
+
+    /**
+     * If the route pattern is matched then it will return the values in the
+     * pattern. EG: for a route like this:
+     *      admin/projects/{projectId}/edit/{anotherId}
+     * and the request URL like this:
+     *      admin/projects/99/edit/1221
+     * it will return the array [99, 1221]
+     *
+     * @param string $route
+     * @param string $requestUrl
+     * @return boolean
+     */
+    private function routeExists($route, $requestUrl)
+    {
+        if ($route == $requestUrl) {
+            return true;
+        } else if (strlen($route)) {
+            if (preg_match($this->getRouteRegex($route), $requestUrl, $matches)) {
+                // to avoid that the route   admin/tasks/{taskId}/update   result
+                // equal to   admin/tasks  must perfome the following check as well
+                if ($matches[0] == $requestUrl) return true;
+            }
+        }
+
+        return false;
+    }
+
+
+
+    /**
+     * From the route it returns the regex pattern.
+     *
+     * @param array $route
+     * @return string
+     */
+    private function getRouteRegex($route)
+    {
+        $pattern = preg_replace('/\{(.*?)\}/', '([a-zA-Z0-9-_]+)', $route);
+
+        $pattern = str_replace('/', '\\/', $pattern);
+
+        return '/' . $pattern . '/';
     }
 }

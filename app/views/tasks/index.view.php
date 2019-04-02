@@ -6,36 +6,38 @@
 
 <?php require(__DIR__ . '/../partials/errors-alert.php') ?>
 
-<form method="post">
-    <div class="card">
-        <div class="card-header">
-            Task List
-        </div>
-        <div class="card-body">
-            <?php if($tasks): ?>
-                <ul class="tasks">
-                    <?php foreach ($tasks as $task): ?>
-                        <li>
-                            <input type="checkbox" <?= $task->isCompleted('checked') ?> name="tasks[<?= $task->getId() ?>]">
+<div class="card">
+    <div class="card-header">
+        Task List
+    </div>
+    <div class="card-body">
+        <?php if($tasks): ?>
+            <ul class="tasks">
+                <?php foreach ($tasks as $task): ?>
+                    <li>
+                        <form class="" action="<?= $task->path('update') ?>" method="post">
+                            <input
+                                type="checkbox" <?= $task->isCompleted('checked') ?>
+                                name="is_completed"
+                                onChange="this.form.submit()"
+                            >
                             <span class="<?= $task->isCompleted('is-completed') ?>">
                                 <?= $task->data->task ?>
                             </span>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            <?php else: ?>
-                <p class="text-center py-3">
-                    No tasks to display
-                </p>
-            <?php endif; ?>
-        </div>
+                        </form>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php else: ?>
+            <p class="text-center py-3">
+                No tasks to display
+            </p>
+        <?php endif; ?>
     </div>
-    <div class="card-footer text-right">
-        <button type="submit" class="btn btn-primary" name="action" value="save">
-            <i class="fas fa-save"></i> Save
-        </button>
-    </div>
+</div>
 
+
+<form method="post">
     <div class="card my-5">
         <div class="card-header">
             Create a new task

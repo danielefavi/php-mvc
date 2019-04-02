@@ -20,4 +20,5 @@ $router->resource('admin/posts', 'Posts');
 // all the routes and in the folder app/models you'll finde the model and
 // in the app/controllers the controller
 $router->get('admin/tasks', 'TaskController@index');
-$router->post('admin/tasks', 'TaskController@actions');
+$router->post('admin/tasks', 'TaskController@store');
+$router->post('admin/tasks/{taskId}/update', 'TaskController@update');

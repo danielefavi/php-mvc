@@ -33,4 +33,22 @@ class Post extends Model
         'body',
     ];
 
+
+
+    /**
+     * Return the path of the task resource.
+     *
+     * @param string $suffix|null
+     * @return string
+     */
+    public function path($suffix=null)
+    {
+        $path = 'admin/posts/' . $this->getId();
+
+        if ($suffix) {
+            $path .= "/{$suffix}";
+        }
+
+        return get_uri($path);
+    }
 }

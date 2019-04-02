@@ -792,12 +792,19 @@ class Model
      */
     public static function paginate($clauses=[], $clauseData=[], $settings=[])
     {
+        $settings = static::setDefaultSettings($settings);
+        $table = static::getTableStatic();
+        $primaryKey = static::getPrimaryKeyStatic();
+
         if (isset($settings['searchable'])) {
             $settings['searchable'] = $settings['searchable'];
+        } else {
+            $settings['searchable'] = static::getFillableStatic();
         }
-        else $settings['searchable'] = static::getFillableStatic();
 
-        $result = DB()->paginate(static::getTableStatic(), $clauses, $clauseData, $settings);
+        $clauses = static::setDefaultClauses($clauses, $table, $primaryKey, $settings);
+
+        $result = DB()->paginate($table, $clauses, $clauseData, $settings);
 
         $result['result'] = static::loadModelData($result['result']);
 

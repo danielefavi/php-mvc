@@ -25,7 +25,7 @@
 				<td><?= $post->data->body ?></td>
 				<td><?= $post->data->deleted_at ?></td>
 				<td>
-					<a href="<?= get_uri('admin/posts/edit', ['id'=>$post->data->id]) ?>" class="btn btn-xs btn-danger">
+					<a href="<?= $post->path('edit') ?>" class="btn btn-xs btn-danger">
 						<i class="fas fa-pencil-alt"></i> Edit
 					</a>
 				</td>
