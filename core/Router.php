@@ -151,9 +151,9 @@ class Router
 
         foreach ($this->routes[$requestType] as $routesUrl => $action) {
             if ($attrValues = $this->routeExists($routesUrl, $uri)) {
-                $namedAttrValues = $this->getRequestAttributes($routesUrl, $uri);
+                $request = $this->getRequestAttributes($routesUrl, $uri);
 
-                return $this->callAction($action, $namedAttrValues);
+                return $this->callAction($action, $request);
             }
         }
 
@@ -250,6 +250,8 @@ class Router
     {
         preg_match_all('/\{(.*?)\}/', $route, $names);
 
+        $attributes = [];
+
         if (preg_match($this->getRouteRegex($route), $requestUrl, $values)) {
             if ($values[0] == $requestUrl) {
                 array_shift($values); // removing the first element
@@ -257,16 +259,15 @@ class Router
         }
 
         if (isset($names[1]) and (count($names[1]) == count($values))) {
-            $attributes = [];
-
             foreach ($names[1] as $key => $name) {
                 $attributes[$name] = $values[$key];
             }
-
-            return $attributes;
         }
 
-        return [];
+        $request = new \Core\Request;
+        $request->setRouteAttributes($attributes);
+
+        return $request;
     }
 
 

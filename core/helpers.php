@@ -4,6 +4,15 @@ use Core\App;
 
 
 
+function tap($value, $callback)
+{
+    $callback($value);
+
+    return $value;
+}
+
+
+
 /**
  * Return the full path. EG: /var/www/html/the-app-folder/base-url/$path
  *
@@ -180,7 +189,7 @@ function get_storage_path($path=null)
 function  append_params_to_uri($uri, $params=[])
 {
     if (count($params)) {
-        foreach (request('get', []) as $key => $value) {
+        foreach (request()->get() as $key => $value) {
             if (! isset($params[$key])) {
                 $params[$key] = $value;
             }
@@ -399,39 +408,13 @@ function link_is_active($paths, $retVal=true)
 
 
 /**
- * Get the data from the request.
+ * Get the request object.
  *
- * @param string $type
- * @param string $var|null
- * @return mixed
+ * @return Request
  */
-function request($type, $var=null, $default=null)
+function request()
 {
-	$type = strtoupper($type);
-
-	if ($type == 'GET') {
-		if (! $var) return $_GET;
-		else if (isset($_GET[$var])) return $_GET[$var];
-	}
-
-	else if ($type == 'POST') {
-		if (! $var) return $_POST;
-		else if (isset($_POST[$var])) return $_POST[$var];
-	}
-
-    else if ($type == 'ALL') {
-        $all = array_merge($_GET, $_POST);
-
-		if (! $var) return $all;
-		else if (isset($all[$var])) return $all[$var];
-	}
-
-    else if ($type == 'FILES') {
-        if (! $var) return $_FILES;
-		else if (isset($_FILES[$var])) return $_FILES[$var];
-	}
-
-	return $default;
+    return new \Core\Request;
 }
 
 

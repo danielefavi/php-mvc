@@ -376,11 +376,11 @@ class DB
      */
     private function setPaginationDefaultParameters()
     {
-        $limit = request('get', 'limit', 50);
-        $page = request('get', 'page', 0);
-        $orderBy = request('get', 'order_by');
-        $orderByMode = request('get', 'order_by_mode');
-        $search = request('get', 'search');
+        $limit = request()->get('limit', 50);
+        $page = request()->get('page', 0);
+        $orderBy = request()->get('order_by');
+        $orderByMode = request()->get('order_by_mode');
+        $search = request()->get('search');
 
         if (!is_numeric($page) or ($page < 1) or empty($page)) $page = 1;
         if (!is_numeric($limit) or ($limit < 10) or ($limit > 500)) $limit = 50;
@@ -446,7 +446,7 @@ class DB
     {
         $links = [];
 
-        $getParams = request('get', []);
+        $getParams = request()->get(null, []);
 
         foreach ($params as $key => $value) {
             if (empty($value)) continue;

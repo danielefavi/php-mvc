@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use \Core\App;
+use \Core\Request;
 
 
 
@@ -33,6 +34,9 @@ class HomeController
      */
     public function test()
     {
+        $r = new Request;
+
+        dd( $r->get() );
     }
 
 
@@ -76,8 +80,8 @@ class HomeController
      */
     public function performLogin()
     {
-        $user = request('post', 'user');
-        $pass = request('post', 'password');
+        $user = request()->post('user');
+        $pass = request()->post('password');
 
         if (auth()->login($user, $pass)) {
             return redirect('admin/home');

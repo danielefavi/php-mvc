@@ -4,6 +4,7 @@
 namespace App\Resources\Posts;
 
 use \Core\App;
+use \Core\Request;
 
 
 
@@ -56,17 +57,18 @@ class Controller
     /**
      * Store a new post when the user submit the button.
      *
+     * @param Request $request
      * @return void
      */
-    public function store()
+    public function store(Request $request)
     {
-        $errors = $this->validateForm();
+        $errors = $this->validateForm($request);
 
         if (count($errors)) {
             return view('posts/create', compact('errors'));
         }
 
-        $post = Post::create(request('post'));
+        $post = Post::create($request->post());
 
         return redirect('admin/posts/edit', ['id' => $post->data->id]);
     }
@@ -76,14 +78,13 @@ class Controller
     /**
      * Show the edit form.
      *
+     * @param Request $request
      * @return void
      */
-    public function edit($attr=[])
+    public function edit(Request $request)
     {
-        if (isset($attr['postId'])) {
-            if ($post = Post::find($attr['postId'])) {
-                return view('posts/edit', compact('post'));
-            }
+        if ($post = Post::find($request->routes('postId'))) {
+            return view('posts/edit', compact('post'));
         }
 
         // return the 404 page if the post is not found
@@ -95,18 +96,17 @@ class Controller
     /**
      * First perfomrs the form validation on the post then update it.
      *
-     * @param Post $post
+     * @param Request $request
      * @return void
      */
-    public function update($attr=[])
+    public function update(Request $request)
     {
-        if (! isset($attr['postId'])) return view('404');
-        else if (!$post = Post::find($attr['postId'])) return view('404');
+        if (!$post = Post::find($request->routes('postId'))) return view('404');
 
-        $errors = $this->validateForm();
+        $errors = $this->validateForm($request);
 
         if (! count($errors)) {
-            $post->save(request('post'));
+            $post->save($request->post());
         }
 
         return view('posts/edit', compact('post', 'errors'));
@@ -117,13 +117,12 @@ class Controller
     /**
      * Delete the given post and redirect to the post main page.
      *
-     * @param Post $post
+     * @param Request $request
      * @return void
      */
-    public function delete($attr=[])
+    public function delete(Request $request)
     {
-        if (! isset($attr['postId'])) return view('404');
-        else if (!$post = Post::find($attr['postId'])) return view('404');
+        if (!$post = Post::find($request->routes('postId'))) return view('404');
 
         $post->delete();
 
@@ -135,13 +134,14 @@ class Controller
     /**
      * Perform the form validation checking the data from the request.
      *
+     * @param Request $request
      * @return array
      */
-    private function validateForm()
+    private function validateForm(Request $request)
     {
         $errors = [];
 
-        $title = request('post', 'title');
+        $title = $request->post('title');
 
         if (!$title or !strlen($title)) {
             $errors[] = 'The title is mandatory.';
