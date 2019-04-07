@@ -11,6 +11,19 @@ class HomeController
 {
 
     /**
+     * A controller where you can do your tests :)
+     * Then open your app on /test
+     *
+     * @return void
+     */
+    public function test()
+    {
+        dd('Do your test here!');
+    }
+
+
+
+    /**
      * Show the welcome page if the user is not loggen in otherwise it will
      * redirect the user to the administration homepage.
      *
@@ -23,20 +36,6 @@ class HomeController
         }
 
         return redirect('admin/home');
-    }
-
-
-
-    /**
-     * A controller test function where you can do your tests :)
-     *
-     * @return void
-     */
-    public function test()
-    {
-        $r = new Request;
-
-        dd( $r->get() );
     }
 
 

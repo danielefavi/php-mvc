@@ -264,10 +264,9 @@ class Router
             }
         }
 
-        $request = new \Core\Request;
-        $request->setRouteAttributes($attributes);
-
-        return $request;
+        return tap(new \Core\Request, function($request) use ($attributes) {
+            $request->setRouteAttributes($attributes);
+        });
     }
 
 

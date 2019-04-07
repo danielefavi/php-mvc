@@ -4,6 +4,16 @@ use Core\App;
 
 
 
+/**
+ * Simple version of tap function from Laravel :)
+ * The tap function accepts two arguments: an arbitrary $value and a Closure.
+ * The $value will be passed to the Closure and then be returned by the tap
+ * function.
+ *
+ * @param mixed $value
+ * @param Closure $callback
+ * @return mixed
+ */
 function tap($value, $callback)
 {
     $callback($value);
