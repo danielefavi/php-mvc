@@ -446,6 +446,28 @@ function view($name, $data=[])
 
 
 /**
+ * Echo out the json response.
+ *
+ * @param mixed $data|null
+ * @param numeric $httpStatus|200
+ * @return void
+ */
+function json_response($data=null, $httpStatus=200)
+{
+    header_remove();
+
+    header("Content-Type: application/json");
+
+    header('Status: ' . $httpStatus);
+
+    http_response_code($httpStatus);
+
+    echo json_encode($data);
+}
+
+
+
+/**
  * This function is used to make the notices and warnings blocking exception
  * in case of debug mode.
  *

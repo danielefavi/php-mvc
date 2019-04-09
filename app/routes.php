@@ -9,6 +9,7 @@ $router->get('login', 'HomeController@login');
 $router->post('login', 'HomeController@performLogin');
 $router->post('logout', 'HomeController@logout');
 
+$router->post('test', 'HomeController@test');
 $router->get('test', 'HomeController@test');
 $router->get('admin/home', 'AdminController@home');
 
