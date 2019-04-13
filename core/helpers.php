@@ -440,8 +440,7 @@ function link_is_active($paths, $retVal=true)
             $path = get_uri( rtrim($path, '*') );
 
             if (strpos(get_current_uri(), $path) === 0) return $retVal;
-        }
-        else {
+        } else {
             $path = trim(get_uri($path), '/');
 
             if (trim(get_current_uri(), '/') == $path) return $retVal;
@@ -523,9 +522,8 @@ function error_notice_warning_handle($errNo, $errStr, $errFile, $errLine)
 
         throw new \Exception($msg, $errNo);
     }
-    else {
-        echo $msg;
-    }
+
+    echo $msg;
 }
 
 

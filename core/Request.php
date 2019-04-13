@@ -55,7 +55,11 @@ class Request
      */
     public function get($var=null, $default=null)
     {
-        if ($var) return $_GET[$var] ?? $default;
+        if ($var) {
+            if (isset($_POST[$var])) return $_POST[$var];
+
+            return $_GET[$var] ?? $default;
+        }
 
         return $_GET;
     }
@@ -107,6 +111,68 @@ class Request
         if ($var) return $_FILE[$var] ?? null;
 
         return $_FILE;
+    }
+
+
+
+    /**
+     * Validate a request.
+     *
+     * @param array $rules
+     * @return array
+     */
+    public function validate($rules)
+    {
+        $data = [];
+        $errorMessages = [];
+
+        foreach($rules as $key => $rule) {
+            $value = $this->get($key);
+            $errors = $this->performValidation($key, $value, $rule);
+
+            if (count($errors)) {
+                $errorMessages[$key] = $errors;
+            } else {
+                $data[$key] = $value;
+            }
+        }
+
+        return [
+            'data' => $data,
+            'errors' => $errorMessages,
+        ];
+    }
+
+
+
+    /**
+     * Perform the actual validation on the given value.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @param mixed $rule
+     * @return array
+     */
+    protected function performValidation($key, $value, $rule)
+    {
+        $errors = [];
+        if (!is_array($rule)) $rule = explode('|', $rule);
+
+        if (in_array('trim', $rule)) $value = trim($value);
+
+        if (in_array('required', $rule)) {
+            if (empty($value)) $errors[] = "$key is required.";
+        }
+
+        if (in_array('string', $rule)) {
+            if (! is_string($value)) $errors[] = "$key is not a string.";
+        }
+
+        if (in_array('numeric', $rule)) {
+            if (! is_numeric($value)) $errors[] = "$key is not a number.";
+        }
+
+        return $errors;
     }
 
 }

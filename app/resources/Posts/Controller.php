@@ -62,15 +62,17 @@ class Controller
      */
     public function store(Request $request)
     {
-        $errors = $this->validateForm($request);
+        $validation = $this->validateForm($request);
 
-        if (count($errors)) {
-            return view('posts/create', compact('errors'));
+        if (count($validation['errors'])) {
+            return view('posts/create', [
+                'errors' => $validation['errors']
+            ]);
         }
 
-        $post = Post::create($request->post());
+        $post = Post::create($validation['data']);
 
-        return redirect('admin/posts/edit', ['id' => $post->data->id]);
+        return redirect("admin/posts/{$post->data->id}/edit");
     }
 
 
@@ -103,13 +105,22 @@ class Controller
     {
         if (!$post = Post::find($request->routes('postId'))) return view('404');
 
-        $errors = $this->validateForm($request);
+        $validation = $this->validateForm($request);
 
-        if (! count($errors)) {
+        if (count($validation['errors'])) {
+            return view('posts/create', [
+                'errors' => $validation['errors']
+            ]);
+        }
+
+        if (! count($validation['errors'])) {
             $post->save($request->post());
         }
 
-        return view('posts/edit', compact('post', 'errors'));
+        return view('posts/edit', [
+            'post' => $post,
+            'errors' => $validation['errors'],
+        ]);
     }
 
 
@@ -139,14 +150,9 @@ class Controller
      */
     private function validateForm(Request $request)
     {
-        $errors = [];
-
-        $title = $request->post('title');
-
-        if (!$title or !strlen($title)) {
-            $errors[] = 'The title is mandatory.';
-        }
-
-        return $errors;
+        return $request->validate([
+            'title' => 'required',
+            'body' => '',
+        ]);
     }
 }

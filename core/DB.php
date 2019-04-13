@@ -353,8 +353,7 @@ class DB
 
                 if (! empty($clauses['where'])) {
                     $clauses['where'] = '(' . $clauses['where'] . ") AND ( $searchClause )";
-                }
-                else {
+                } else {
                     $clauses['where'] = "( $searchClause )";
                 }
             }

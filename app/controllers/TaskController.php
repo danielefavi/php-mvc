@@ -36,13 +36,15 @@ class TaskController
      */
     public function store(Request $request)
     {
-        $task = trim($request->post('task'));
+        $validation = $request->validate([
+            'task' => 'required|trim'
+        ]);
 
-        if (empty($task)) {
-            return $this->index($request, ['The task title is mandatory!']);
+        if (count($validation['errors'])) {
+            return $this->index($request, $validation['errors']);
         }
 
-        Task::create(compact('task'));
+        Task::create($validation['data']);
 
         return redirect('admin/tasks');
     }
