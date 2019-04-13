@@ -14,11 +14,47 @@ use Core\App;
  * @param Closure $callback
  * @return mixed
  */
-function tap($value, $callback)
-{
-    $callback($value);
+if (! function_exists('tap')) {
+    function tap($value, $callback)
+    {
+        $callback($value);
 
-    return $value;
+        return $value;
+    }
+}
+
+
+
+/**
+ * Encrypt a string using the Encrypter class.
+ *
+ * @param string $string
+ * @return string
+ */
+function encrypt_str($string)
+{
+    if (App::has('encrypter')) {
+        return App::get('encrypter')->encrypt($string);
+    }
+
+    throw new \Exception('To use the ecryption you must set the keys in the config.php', 1);
+}
+
+
+
+/**
+ * Decrypt a given string using the Encrypter class.
+ *
+ * @param string $string
+ * @return string
+ */
+function decrypt_str($string)
+{
+    if (App::has('encrypter')) {
+        return App::get('encrypter')->decrypt($string);
+    }
+
+    throw new \Exception('To use the ecryption you must set the keys in the config.php', 1);
 }
 
 

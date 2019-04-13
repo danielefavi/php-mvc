@@ -22,6 +22,12 @@ return [
         'session_name' => 'silly_auth_session',
     ],
 
+    // settings for the encryptio
+    'encrypter' => [
+        'key' => 'my_secret_key',
+        'iv' => 'my_secret_iv',
+    ],
+
     // 'base_url' => 'your-website-subfolder/', // EG: http://www.example.com/your-website-subfolder
 
     // uncomment this if you want to use log using the function addLog()

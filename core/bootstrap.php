@@ -50,6 +50,16 @@ if (isset($config['silly_auth'])) {
 }
 
 /*
+ * Registering the ecryption keys for the encrypter class.
+ */
+if (isset($config['encrypter'])) {
+    App::bind('encrypter', new \Core\Encrypter(
+        $config['encrypter']['key'],
+        $config['encrypter']['iv']
+    ));
+}
+
+/*
  * Displaying all the errors in case of debud mode = true.
  * NOTE: there is the same error handling configuration also in the index.php,
  * file having the error handling in the index.php file is more effective
